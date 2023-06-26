@@ -1,16 +1,28 @@
-const createExpressApp = require('express');
+const fs = require("fs");
+const path = require("path");
+const express = require("express");
 
-const app = createExpressApp();
+const PORT = 3002;
+const app = express();
+const videoPath = path.join(__dirname, "../videos/SampleVideo_1280x720_1mb.mp4");
 
-const port = 3001;
+app.get("/video", async (req, res) => {
+  try {
+    const stats = await fs.promises.stat(videoPath);
 
+    res.writeHead(200, {
+      "Content-Length": stats.size,
+      "Content-Type": "video/mp4",
+    });
 
-// When a GET request is made to the root URL, the callback function is executed. 
-app.get('/', (req,res)=> {res.send('Hello, World');});
+    const videoStream = fs.createReadStream(videoPath);
+    videoStream.pipe(res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
-// starts the server and makes it listen on the specified port. 
-// logs to the console server is running and listening on the specified port.
-app.listen(port,()=> {console.log(`Example app listening on port ${port}!`);});
-
-
-
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
