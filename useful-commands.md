@@ -2,6 +2,6 @@
 - dev
     - npm install
     - npm run start:dev
-production
+- production
     - npm install --only=production
     - npm start
